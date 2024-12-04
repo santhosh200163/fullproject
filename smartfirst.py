@@ -89,8 +89,5 @@ def update_user(userid):
         return jsonify({"mssg":"User updated successfully"})
     else:
         return jsonify({"error":"Failed to update user"})
-
-
-
 if __name__ == '__main__':
     app.run(debug=True)
