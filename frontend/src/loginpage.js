@@ -53,7 +53,6 @@ const LoginPage = () => {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                 />
-
                 <div className="wrap">
                     <button type="submit">Submit</button>
                 </div>
