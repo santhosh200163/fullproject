@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
-
+from flask_cors import CORS
 app = Flask(__name__)
+CORS(app)
+
 
 client = MongoClient("mongodb+srv://santhosh2k01:san2001@cluster0.qksjljg.mongodb.net/?retryWrites=true&w=majority")
 db = client["smart"]  
@@ -19,19 +21,19 @@ def get_user():
         users_list.append(user)
     return jsonify(users_list)
 
-#delete user
 @app.route('/api/dstudents/<userid>', methods=["DELETE"])
 def deleteone_user(userid):
-    existing_user = collection.find_one({"id": userid}) 
+    existing_user = collection.find_one({"id": userid})  
     if not existing_user:
-        return jsonify({"message": "User not found"})
+        return jsonify({"message": "User not found"}), 404
     
-    user = collection.delete_one({"id": userid}) 
+    user = collection.delete_one({"id": userid})  
 
     if user.deleted_count > 0:
         return jsonify({"msg": "Successfully deleted"}), 200
     else:
         return jsonify({"message": "Deletion failed"}), 400
+
 
 #update user
 @app.route('/api/ustudents/<userid>', methods=["PUT"])

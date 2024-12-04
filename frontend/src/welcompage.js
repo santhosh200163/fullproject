@@ -7,6 +7,9 @@ const WelcomePage = () => {
     const navigate = useNavigate();
 
     const [students, setStudents] = useState([]);
+    const [editingStudent, setEditingStudent] = useState(null);
+    const [newName, setNewName] = useState("");
+    const [newAge, setNewAge] = useState("");
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -16,7 +19,6 @@ const WelcomePage = () => {
                     throw new Error("Failed to fetch students");
                 }
                 const data = await response.json();
-                console.log(data);
                 setStudents(data);
             } catch (error) {
                 console.error("Error fetching students:", error);
@@ -26,40 +28,61 @@ const WelcomePage = () => {
         fetchStudents();
     }, []);
 
-    const back = () => {
+    const handleBack = () => {
         navigate("/");
     };
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/dstudents`, {
+            const response = await fetch(`http://localhost:5000/api/dstudents/${id}`, {
                 method: "DELETE",
             });
             if (!response.ok) {
                 throw new Error("Failed to delete student");
             }
-
             setStudents(students.filter((student) => student.id !== id));
         } catch (error) {
             console.error("Error deleting student:", error);
         }
     };
 
-    const handleEdit = async (id) => {
+    const handleEdit = (student) => {
+        setEditingStudent(student);
+        setNewName(student.name);
+        setNewAge(student.age);
+    };
+
+    const handleSave = async () => {
+        if (!editingStudent) return;
+
         try {
-            const response = await fetch(`http://localhost:5000/api/ustudents`, {
-                method: "PUT",
-            });
+            const updatedStudent = {
+                name: newName,
+                age: newAge,
+            };
+            const response = await fetch(
+                `http://localhost:5000/api/ustudents/${editingStudent.id}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedStudent),
+                }
+            );
             if (!response.ok) {
                 throw new Error("Failed to update student");
             }
-
-            setStudents(students.filter((student) => student.id !== id));
+            setStudents(
+                students.map((student) =>
+                    student.id === editingStudent.id ? { ...student, ...updatedStudent } : student
+                )
+            );
+            setEditingStudent(null);
         } catch (error) {
-            console.error("Error updateing student:", error);
+            console.error("Error updating student:", error);
         }
     };
-
 
     return (
         <div className="main1">
@@ -67,7 +90,7 @@ const WelcomePage = () => {
             <h2>Login successful!</h2>
 
             <button
-                onClick={back}
+                onClick={handleBack}
                 style={{
                     padding: "10px 20px",
                     margin: "20px 0",
@@ -83,7 +106,7 @@ const WelcomePage = () => {
             <h2>Student List</h2>
             <table
                 border="1"
-                style={{ width: "85%", margin: "20px auto", textAlign: "left" }}
+                style={{ width: "100%", textAlign: "left", height: "100%" }}
             >
                 <thead>
                     <tr>
@@ -92,48 +115,89 @@ const WelcomePage = () => {
                         <th>Age</th>
                         <th>Actions</th>
                     </tr>
-                    <tr>
-                        <td>1001</td>
-                        <td>siva</td>
-                        <td>20</td>
-                        <td></td>
-                    </tr>
                 </thead>
                 <tbody>
                     {students.length > 0 ? (
                         students.map((student) => (
                             <tr key={student.id}>
                                 <td>{student.id}</td>
-                                <td>{student.name}</td>
-                                <td>{student.age}</td>
                                 <td>
-                                    <button
-                                        onClick={() => handleEdit(student.id)}
-                                        style={{
-                                            padding: "5px 10px",
-                                            backgroundColor: "#28a745",
-                                            color: "#fff",
-                                            border: "none",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                            marginRight: "10px",
-                                        }}
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(student.id)}
-                                        style={{
-                                            padding: "5px 10px",
-                                            backgroundColor: "#dc3545",
-                                            color: "#fff",
-                                            border: "none",
-                                            borderRadius: "5px",
-                                            cursor: "pointer",
-                                        }}
-                                    >
-                                        Delete
-                                    </button>
+                                    {editingStudent && editingStudent.id === student.id ? (
+                                        <input
+                                            type="text"
+                                            value={newName}
+                                            onChange={(e) => setNewName(e.target.value)}
+                                        />
+                                    ) : (
+                                        student.name
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudent && editingStudent.id === student.id ? (
+                                        <input
+                                            type="number"
+                                            value={newAge}
+                                            onChange={(e) => setNewAge(e.target.value)}
+                                        />
+                                    ) : (
+                                        student.age
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudent && editingStudent.id === student.id ? (
+                                        <>
+                                            <button
+                                                onClick={handleSave}
+                                                style={{
+                                                    padding: "5px 10px",
+                                                    backgroundColor: "green",
+                                                    borderRadius: "2px",
+                                                    cursor: "pointer",
+                                                    marginRight: "10px",
+                                                }}
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                onClick={() => setEditingStudent(null)}
+                                                style={{
+                                                    padding: "5px 10px",
+                                                    backgroundColor: "red",
+                                                    color: "#fff",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                onClick={() => handleEdit(student)}
+                                                style={{
+                                                    padding: "5px 10px",
+                                                    backgroundColor: "green",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                    marginRight: "8px",
+                                                }}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(student.id)}
+                                                style={{
+                                                    padding: "5px 10px",
+                                                    backgroundColor: "red",
+                                                    borderRadius: "5px",
+                                                    cursor: "pointer",
+                                                }}
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))
