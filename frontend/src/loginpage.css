@@ -1,0 +1,31 @@
+.main {
+    width: 300px;
+    margin: 50px auto;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+input {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+.main1 {
+    width: 300px;
+    margin: 50px auto;
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
