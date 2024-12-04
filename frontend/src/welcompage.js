@@ -61,7 +61,6 @@ const WelcomePage = () => {
                     margin: "20px 0",
                     backgroundColor: "#007bff",
                     color: "#fff",
-                    border: "none",
                     borderRadius: "5px",
                     cursor: "pointer",
                 }}
