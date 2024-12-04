@@ -92,6 +92,12 @@ const WelcomePage = () => {
                         <th>Age</th>
                         <th>Actions</th>
                     </tr>
+                    <tr>
+                        <td>1001</td>
+                        <td>siva</td>
+                        <td>20</td>
+                        <td></td>
+                    </tr>
                 </thead>
                 <tbody>
                     {students.length > 0 ? (
