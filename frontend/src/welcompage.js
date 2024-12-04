@@ -11,7 +11,7 @@ const WelcomePage = () => {
     useEffect(() => {
         const fetchStudents = async () => {
             try {
-                const response = await fetch("http://localhost:5000/api/students");
+                const response = await fetch("http://localhost:5000/api/getstudents");
                 if (!response.ok) {
                     throw new Error("Failed to fetch students");
                 }
@@ -32,7 +32,7 @@ const WelcomePage = () => {
 
     const handleDelete = async (id) => {
         try {
-            const response = await fetch(`http://localhost:5000/api/students/${id}`, {
+            const response = await fetch(`http://localhost:5000/api/dstudents`, {
                 method: "DELETE",
             });
             if (!response.ok) {
@@ -45,9 +45,21 @@ const WelcomePage = () => {
         }
     };
 
-    const handleEdit = (id) => {
-        alert(`Edit student with ID: ${id}`);
+    const handleEdit = async (id) => {
+        try {
+            const response = await fetch(`http://localhost:5000/api/ustudents`, {
+                method: "PUT",
+            });
+            if (!response.ok) {
+                throw new Error("Failed to update student");
+            }
+
+            setStudents(students.filter((student) => student.id !== id));
+        } catch (error) {
+            console.error("Error updateing student:", error);
+        }
     };
+
 
     return (
         <div className="main1">
