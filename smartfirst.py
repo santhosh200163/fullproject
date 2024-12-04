@@ -24,7 +24,7 @@ def add_user():
     return jsonify("User added successfully")
 
 
-#getone user
+#get user
 @app.route('/get_user', methods=["GET"])
 def get_user():
     users_list = []
@@ -36,7 +36,7 @@ def get_user():
     return jsonify(users_list)
 
 
-#get users
+#getone users
 @app.route('/getone_user/<userid>', methods=["GET"])
 def getone_user(userid):
 
