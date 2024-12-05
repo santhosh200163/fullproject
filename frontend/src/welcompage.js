@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import "./welcomepage.css";
 
 const WelcomePage = () => {
     const location = useLocation();
@@ -131,6 +132,7 @@ const WelcomePage = () => {
             console.error("Error adding new student:", error);
         }
     };
+
     const handleSortByName = () => {
         const sortedStudents = [...students].sort((a, b) => {
             return sortNameAsc
@@ -141,9 +143,6 @@ const WelcomePage = () => {
         setSortNameAsc(!sortNameAsc);
     };
 
-
-
-
     const handleSortByAge = () => {
         const sortedStudents = [...students].sort((a, b) => {
             return sortAgeAsc ? a.age - b.age : b.age - a.age;
@@ -153,53 +152,26 @@ const WelcomePage = () => {
     };
 
     return (
-        <div className="main1">
+        <div className="welcome-container">
             <h1>Welcome, {username}!</h1>
-            <h2>Login successful!</h2>
-
-            <button
-                onClick={handleBack}
-                style={{
-                    padding: "10px 20px",
-                    margin: "20px 0",
-                    backgroundColor: "#007bff",
-                    color: "#fff",
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                }}
-            >
+            <button className="back-button" onClick={handleBack}>
                 Back to Login
             </button>
 
             <h2>Student List</h2>
-            <table
-                border="1"
-                style={{
-                    width: "100%",
-                    height: "auto",
-                    margin: "0 auto",
-                    textAlign: "left",
-                    borderCollapse: "collapse",
-                    backgroundColor: "#f9f9f9",
-                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
-                    borderRadius: "8px",
-                    padding: "10px",
-
-
-                }}
-            >
+            <table className="student-table">
                 <thead>
-                    <tr style={{ width: "100%", textAlign: "left", height: "100%" }}>
+                    <tr>
                         <th>ID</th>
                         <th>
                             Name
-                            <button onClick={handleSortByName} style={{ marginLeft: "10px", width: "80%", height: "5%" }}>
+                            <button className="sort-button" onClick={handleSortByName}>
                                 {sortNameAsc ? "Des" : "Asc"}
                             </button>
                         </th>
                         <th>
                             Age
-                            <button onClick={handleSortByAge} style={{ marginLeft: "10px", width: "80%", height: "5%" }}>
+                            <button className="sort-button" onClick={handleSortByAge}>
                                 {sortAgeAsc ? "Des" : "Asc"}
                             </button>
                         </th>
@@ -213,106 +185,17 @@ const WelcomePage = () => {
                         students.map((student) => (
                             <tr key={student.id}>
                                 <td>{student.id}</td>
+                                <td>{student.name}</td>
+                                <td>{student.age}</td>
+                                <td>{student.class}</td>
+                                <td>{student.gender}</td>
                                 <td>
-                                    {editingStudentId === student.id ? (
-                                        <input
-                                            type="text"
-                                            value={newName}
-                                            onChange={(e) => setNewName(e.target.value)}
-                                        />
-                                    ) : (
-                                        student.name
-                                    )}
-                                </td>
-                                <td>
-                                    {editingStudentId === student.id ? (
-                                        <input
-                                            type="number"
-                                            value={newAge}
-                                            onChange={(e) => setNewAge(e.target.value)}
-                                        />
-                                    ) : (
-                                        student.age
-                                    )}
-                                </td>
-                                <td>
-                                    {editingStudentId === student.id ? (
-                                        <input
-                                            type="text"
-                                            value={newClass}
-                                            onChange={(e) => setNewClass(e.target.value)}
-                                        />
-                                    ) : (
-                                        student.class
-                                    )}
-                                </td>
-                                <td>
-                                    {editingStudentId === student.id ? (
-                                        <input
-                                            type="text"
-                                            value={newGender}
-                                            onChange={(e) => setNewGender(e.target.value)}
-                                        />
-                                    ) : (
-                                        student.gender
-                                    )}
-                                </td>
-                                <td>
-                                    {editingStudentId === student.id ? (
-                                        <>
-                                            <button
-                                                onClick={handleSave}
-                                                style={{
-                                                    padding: "5px 10px",
-                                                    backgroundColor: "green",
-                                                    borderRadius: "2px",
-                                                    cursor: "pointer",
-                                                    marginRight: "10px",
-                                                }}
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                onClick={() => setEditingStudentId(null)}
-                                                style={{
-                                                    padding: "5px 10px",
-                                                    backgroundColor: "red",
-                                                    color: "#fff",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                Cancel
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button
-                                                onClick={() => handleEdit(student)}
-                                                style={{
-                                                    padding: "5px 10px",
-                                                    backgroundColor: "yellowgreen",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                    marginRight: "10px",
-                                                }}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                onClick={() => handleDelete(student.id)}
-                                                style={{
-                                                    padding: "5px 10px",
-                                                    backgroundColor: "red",
-                                                    color: "#fff",
-                                                    borderRadius: "5px",
-                                                    cursor: "pointer",
-                                                }}
-                                            >
-                                                Delete
-                                            </button>
-                                        </>
-                                    )}
+                                    <button className="edit-button" onClick={() => handleEdit(student)}>
+                                        Edit
+                                    </button>
+                                    <button className="delete-button" onClick={() => handleDelete(student.id)}>
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         ))
@@ -325,52 +208,38 @@ const WelcomePage = () => {
             </table>
 
             <h3>Add New Student</h3>
-            <div style={{ marginBottom: "20px" }}>
+            <div className="add-student-form">
                 <input
                     type="text"
                     placeholder="ID"
                     value={newStudentId}
                     onChange={(e) => setNewStudentId(e.target.value)}
-                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="text"
                     placeholder="Name"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="number"
                     placeholder="Age"
                     value={newStudentAge}
                     onChange={(e) => setNewStudentAge(e.target.value)}
-                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="text"
                     placeholder="Class"
                     value={newStudentClass}
                     onChange={(e) => setNewStudentClass(e.target.value)}
-                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="text"
                     placeholder="Gender"
                     value={newStudentGender}
                     onChange={(e) => setNewStudentGender(e.target.value)}
-                    style={{ padding: "5px", margin: "5px" }}
                 />
-                <button
-                    onClick={handleAddStudent}
-                    style={{
-                        padding: "5px 10px",
-                        backgroundColor: "#007bff",
-                        color: "#fff",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                    }}
-                >
+                <button className="add-button" onClick={handleAddStudent}>
                     Add Student
                 </button>
             </div>

@@ -1,0 +1,80 @@
+.welcome-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+.back-button {
+    padding: 10px 20px;
+    margin: 20px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: white;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.student-table th,
+.student-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid lightgray;
+}
+
+.student-table th {
+    background-color: blue;
+    color: white;
+}
+
+
+
+.edit-button,
+.delete-button,
+.add-button,
+.sort-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.edit-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.delete-button {
+    background-color: red;
+    color: white;
+}
+
+.add-button {
+    background-color: blue;
+}
+
+.sort-button {
+    background-color: gray;
+    color: white;
+    margin-left: 5px;
+}
+
+.add-student-form {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.add-student-form input {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 150px;
+}
