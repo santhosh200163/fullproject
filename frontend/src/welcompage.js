@@ -9,18 +9,18 @@ const WelcomePage = () => {
 
     const [students, setStudents] = useState([]);
     const [editingStudentId, setEditingStudentId] = useState(null);
-    const [newName, setNewName] = useState("");
-    const [newAge, setNewAge] = useState("");
-    const [newClass, setNewClass] = useState("");
-    const [newGender, setNewGender] = useState("");
-    const [newStudentId, setNewStudentId] = useState("");
-    const [newStudentName, setNewStudentName] = useState("");
-    const [newStudentAge, setNewStudentAge] = useState("");
-    const [newStudentClass, setNewStudentClass] = useState("");
-    const [newStudentGender, setNewStudentGender] = useState("");
-
-    const [sortNameAsc, setSortNameAsc] = useState(true);
-    const [sortAgeAsc, setSortAgeAsc] = useState(true);
+    const [editForm, setEditForm] = useState({
+        name: "",
+        age: "",
+        class: "",
+        gender: "",
+    });
+    const [addForm, setAddForm] = useState({
+        name: "",
+        age: "",
+        class: "",
+        gender: "",
+    });
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -43,6 +43,97 @@ const WelcomePage = () => {
         navigate("/");
     };
 
+    const handleEdit = (student) => {
+        setEditingStudentId(student.id);
+        setEditForm({
+            name: student.name,
+            age: student.age,
+            class: student.class,
+            gender: student.gender,
+        });
+    };
+
+    const handleSave = async () => {
+        if (!editingStudentId) return;
+
+        try {
+            const updatedStudent = { ...editForm };
+            const response = await fetch(
+                `http://localhost:5000/api/ustudents/${editingStudentId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(updatedStudent),
+                }
+            );
+
+            if (!response.ok) {
+                throw new Error("Failed to update student");
+            }
+
+            setStudents((prevStudents) =>
+                prevStudents.map((student) =>
+                    student.id === editingStudentId
+                        ? { ...student, ...updatedStudent }
+                        : student
+                )
+            );
+            setEditingStudentId(null);
+        } catch (error) {
+            console.error("Error updating student:", error);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setEditingStudentId(null);
+    };
+
+    const handleInputChange = (e) => {
+        const { name, value } = e.target;
+        setEditForm((prevForm) => ({
+            ...prevForm,
+            [name]: value,
+        }));
+    };
+
+    const handleAddInputChange = (e) => {
+        const { name, value } = e.target;
+        setAddForm((prevForm) => ({
+            ...prevForm,
+            [name]: value,
+        }));
+    };
+
+    const handleAdd = async () => {
+        try {
+            const newStudent = { ...addForm };
+            const response = await fetch("http://localhost:5000/api/addstudent", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newStudent),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add student");
+            }
+
+            const addedStudent = await response.json();
+            setStudents((prevStudents) => [...prevStudents, addedStudent]);
+            setAddForm({
+                name: "",
+                age: "",
+                class: "",
+                gender: "",
+            });
+        } catch (error) {
+            console.error("Error adding student:", error);
+        }
+    };
+
     const handleDelete = async (id) => {
         try {
             const response = await fetch(`http://localhost:5000/api/dstudents/${id}`, {
@@ -57,100 +148,6 @@ const WelcomePage = () => {
         }
     };
 
-    const handleEdit = (student) => {
-        setEditingStudentId(student.id);
-        setNewName(student.name);
-        setNewAge(student.age);
-        setNewClass(student.class);
-        setNewGender(student.gender);
-    };
-
-    const handleSave = async () => {
-        if (!editingStudentId) return;
-
-        try {
-            const updatedStudent = {
-                name: newName,
-                age: newAge,
-                class: newClass,
-                gender: newGender,
-            };
-            const response = await fetch(
-                `http://localhost:5000/api/ustudents/${editingStudentId}`,
-                {
-                    method: "PUT",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(updatedStudent),
-                }
-            );
-            if (!response.ok) {
-                throw new Error("Failed to update student");
-            }
-            setStudents(
-                students.map((student) =>
-                    student.id === editingStudentId ? { ...student, ...updatedStudent } : student
-                )
-            );
-            setEditingStudentId(null);
-        } catch (error) {
-            console.error("Error updating student:", error);
-        }
-    };
-
-    const handleAddStudent = async () => {
-        const newStudent = {
-            id: newStudentId,
-            name: newStudentName,
-            age: newStudentAge,
-            class: newStudentClass,
-            gender: newStudentGender,
-        };
-
-        try {
-            const response = await fetch("http://localhost:5000/api/adstudents", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(newStudent),
-            });
-
-            if (!response.ok) {
-                throw new Error("Failed to add new student");
-            }
-
-            const addedStudent = await response.json();
-            setStudents((prevStudents) => [...prevStudents, addedStudent]);
-            setNewStudentId("");
-            setNewStudentName("");
-            setNewStudentAge("");
-            setNewStudentClass("");
-            setNewStudentGender("");
-        } catch (error) {
-            console.error("Error adding new student:", error);
-        }
-    };
-
-    const handleSortByName = () => {
-        const sortedStudents = [...students].sort((a, b) => {
-            return sortNameAsc
-                ? a.name.localeCompare(b.name)
-                : b.name.localeCompare(a.name);
-        });
-        setStudents(sortedStudents);
-        setSortNameAsc(!sortNameAsc);
-    };
-
-    const handleSortByAge = () => {
-        const sortedStudents = [...students].sort((a, b) => {
-            return sortAgeAsc ? a.age - b.age : b.age - a.age;
-        });
-        setStudents(sortedStudents);
-        setSortAgeAsc(!sortAgeAsc);
-    };
-
     return (
         <div className="welcome-container">
             <h1>Welcome, {username}!</h1>
@@ -163,18 +160,8 @@ const WelcomePage = () => {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>
-                            Name
-                            <button className="sort-button" onClick={handleSortByName}>
-                                {sortNameAsc ? "Des" : "Asc"}
-                            </button>
-                        </th>
-                        <th>
-                            Age
-                            <button className="sort-button" onClick={handleSortByAge}>
-                                {sortAgeAsc ? "Des" : "Asc"}
-                            </button>
-                        </th>
+                        <th>Name</th>
+                        <th>Age</th>
                         <th>Class</th>
                         <th>Gender</th>
                         <th>Actions</th>
@@ -185,17 +172,86 @@ const WelcomePage = () => {
                         students.map((student) => (
                             <tr key={student.id}>
                                 <td>{student.id}</td>
-                                <td>{student.name}</td>
-                                <td>{student.age}</td>
-                                <td>{student.class}</td>
-                                <td>{student.gender}</td>
                                 <td>
-                                    <button className="edit-button" onClick={() => handleEdit(student)}>
-                                        Edit
-                                    </button>
-                                    <button className="delete-button" onClick={() => handleDelete(student.id)}>
-                                        Delete
-                                    </button>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            name="name"
+                                            value={editForm.name}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.name
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="number"
+                                            name="age"
+                                            value={editForm.age}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.age
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            name="class"
+                                            value={editForm.class}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.class
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            name="gender"
+                                            value={editForm.gender}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.gender
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <>
+                                            <button
+                                                className="save-button"
+                                                onClick={handleSave}
+                                            >
+                                                Save
+                                            </button>
+                                            <button
+                                                className="cancel-button"
+                                                onClick={handleCancelEdit}
+                                            >
+                                                Cancel
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button
+                                                className="edit-button"
+                                                onClick={() => handleEdit(student)}
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                className="delete-button"
+                                                onClick={() => handleDelete(student.id)}
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
                                 </td>
                             </tr>
                         ))
@@ -207,39 +263,37 @@ const WelcomePage = () => {
                 </tbody>
             </table>
 
-            <h3>Add New Student</h3>
-            <div className="add-student-form">
+            <h2>Add New Student</h2>
+            <div className="add-form">
                 <input
                     type="text"
-                    placeholder="ID"
-                    value={newStudentId}
-                    onChange={(e) => setNewStudentId(e.target.value)}
-                />
-                <input
-                    type="text"
+                    name="name"
                     placeholder="Name"
-                    value={newStudentName}
-                    onChange={(e) => setNewStudentName(e.target.value)}
+                    value={addForm.name}
+                    onChange={handleAddInputChange}
                 />
                 <input
                     type="number"
+                    name="age"
                     placeholder="Age"
-                    value={newStudentAge}
-                    onChange={(e) => setNewStudentAge(e.target.value)}
+                    value={addForm.age}
+                    onChange={handleAddInputChange}
                 />
                 <input
                     type="text"
+                    name="class"
                     placeholder="Class"
-                    value={newStudentClass}
-                    onChange={(e) => setNewStudentClass(e.target.value)}
+                    value={addForm.class}
+                    onChange={handleAddInputChange}
                 />
                 <input
                     type="text"
+                    name="gender"
                     placeholder="Gender"
-                    value={newStudentGender}
-                    onChange={(e) => setNewStudentGender(e.target.value)}
+                    value={addForm.gender}
+                    onChange={handleAddInputChange}
                 />
-                <button className="add-button" onClick={handleAddStudent}>
+                <button className="add-button" onClick={handleAdd}>
                     Add Student
                 </button>
             </div>
