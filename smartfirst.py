@@ -19,17 +19,22 @@ def get_students():
         students_list.append(student)
     return jsonify(students_list)
 
-# Add 
+
 @app.route('/api/adstudents', methods=["POST"])
 def add_student():
-    newstudent = request.get_json() 
-   
-    result = collection.insert_one(newstudent)
+    try:
+        new_student = request.get_json()
+        result = collection.insert_one(new_student)
 
-    if result.insertedid:
-        return jsonify({"message": "Student added successfully"}), 201
-    else:
-        return jsonify({"message": "Failed to add student"}), 500
+        if result.inserted_id:
+         
+            new_student["_id"] = str(result.inserted_id) 
+            return jsonify(new_student), 201
+        else:
+            return jsonify({"message": "Failed to add student"}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 # Delete 
 @app.route('/api/dstudents/<userid>', methods=["DELETE"])

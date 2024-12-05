@@ -89,15 +89,11 @@ const WelcomePage = () => {
     };
 
     const handleAddStudent = async () => {
-        if (!newStudentId || !newStudentName || !newStudentAge) return;
+
 
         const newStudent = { id: newStudentId, name: newStudentName, age: newStudentAge };
 
         try {
-
-            const tempStudent = { ...newStudent };
-            setStudents([...students, tempStudent]);
-
             const response = await fetch("http://localhost:5000/api/adstudents", {
                 method: "POST",
                 headers: {
@@ -111,25 +107,14 @@ const WelcomePage = () => {
             }
 
             const addedStudent = await response.json();
-
-            setStudents((prevStudents) =>
-                prevStudents.map((student) =>
-                    student.id === tempStudent.id ? addedStudent : student
-                )
-            );
-
+            setStudents((prevStudents) => [...prevStudents, addedStudent]);
             setNewStudentId("");
             setNewStudentName("");
             setNewStudentAge("");
         } catch (error) {
             console.error("Error adding new student:", error);
-
-            setStudents((prevStudents) =>
-                prevStudents.filter((student) => student.id !== newStudent.id)
-            );
         }
     };
-
 
 
     return (
