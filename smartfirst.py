@@ -1,59 +1,67 @@
 from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from flask_cors import CORS
+
 app = Flask(__name__)
 CORS(app)
 
-
 client = MongoClient("mongodb+srv://santhosh2k01:san2001@cluster0.qksjljg.mongodb.net/?retryWrites=true&w=majority")
-db = client["smart"]  
-collection = db["first"] 
+db = client["smart"]
+collection = db["first"]
 
 
-#get user
 @app.route('/api/getstudents', methods=["GET"])
-def get_user():
-    users_list = []
-    for user in collection.find({}):
-        user["_id"] = str(user["_id"]) 
-        user.pop("_id",None)
- 
-        users_list.append(user)
-    return jsonify(users_list)
+def get_students():
+    students_list = []
+    for student in collection.find({}):
+        #student["_id"] = str(student["_id"])  
+        student.pop("_id", None)
+        students_list.append(student)
+    return jsonify(students_list)
 
+# Add 
+@app.route('/api/adstudents', methods=["POST"])
+def add_student():
+    newstudent = request.get_json() 
+   
+    result = collection.insert_one(newstudent)
+
+    if result.insertedid:
+        return jsonify({"message": "Student added successfully"}), 201
+    else:
+        return jsonify({"message": "Failed to add student"}), 500
+
+# Delete 
 @app.route('/api/dstudents/<userid>', methods=["DELETE"])
-def deleteone_user(userid):
-    existing_user = collection.find_one({"id": userid})  
-    if not existing_user:
-        return jsonify({"message": "User not found"}), 404
+def delete_student(userid):
+    existing_student = collection.find_one({"id": userid})
+    if not existing_student:
+        return jsonify({"message": "Student not found"}), 404
     
-    user = collection.delete_one({"id": userid})  
+    result = collection.delete_one({"id": userid})
 
-    if user.deleted_count > 0:
+    if result.deleted_count > 0:
         return jsonify({"msg": "Successfully deleted"}), 200
     else:
         return jsonify({"message": "Deletion failed"}), 400
 
-
-#update user
+# Update 
 @app.route('/api/ustudents/<userid>', methods=["PUT"])
-def update_user(userid):
-    user_data = request.get_json() 
+def update_student(userid):
+    student_data = request.get_json()
 
-    existing_user = collection.find_one({"id": userid})  
-    if not existing_user:
-        return jsonify({"message": "User not found"})
+    existing_student = collection.find_one({"id": userid})
+    if not existing_student:
+        return jsonify({"message": "Student not found"})
 
-    updated_user = collection.update_one(
-        {"id": userid},      
-        {"$set": user_data}  
+    updated_student = collection.update_one(
+        {"id": userid},
+        {"$set": student_data}
     )
-    if updated_user.matched_count > 0:
-        return jsonify({"mssg": "User updated successfully"})
+    if updated_student.matched_count > 0:
+        return jsonify({"msg": "Student updated successfully"})
     else:
-        return jsonify({"error": "Failed to update user"})
-
-
+        return jsonify({"error": "Failed to update student"})
 
 if __name__ == '__main__':
     app.run(debug=True)

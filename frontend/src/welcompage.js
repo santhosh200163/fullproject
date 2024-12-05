@@ -7,9 +7,13 @@ const WelcomePage = () => {
     const navigate = useNavigate();
 
     const [students, setStudents] = useState([]);
-    const [editingStudent, setEditingStudent] = useState(null);
+    const [editingStudentId, setEditingStudentId] = useState(null);
+    //const [newId, setNewId] = useState("");
     const [newName, setNewName] = useState("");
     const [newAge, setNewAge] = useState("");
+    const [newStudentId, setNewStudentId] = useState("");
+    const [newStudentName, setNewStudentName] = useState("");
+    const [newStudentAge, setNewStudentAge] = useState("");
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -47,13 +51,13 @@ const WelcomePage = () => {
     };
 
     const handleEdit = (student) => {
-        setEditingStudent(student);
+        setEditingStudentId(student.id);
         setNewName(student.name);
         setNewAge(student.age);
     };
 
     const handleSave = async () => {
-        if (!editingStudent) return;
+        if (!editingStudentId) return;
 
         try {
             const updatedStudent = {
@@ -61,7 +65,7 @@ const WelcomePage = () => {
                 age: newAge,
             };
             const response = await fetch(
-                `http://localhost:5000/api/ustudents/${editingStudent.id}`,
+                `http://localhost:5000/api/ustudents/${editingStudentId}`,
                 {
                     method: "PUT",
                     headers: {
@@ -75,14 +79,58 @@ const WelcomePage = () => {
             }
             setStudents(
                 students.map((student) =>
-                    student.id === editingStudent.id ? { ...student, ...updatedStudent } : student
+                    student.id === editingStudentId ? { ...student, ...updatedStudent } : student
                 )
             );
-            setEditingStudent(null);
+            setEditingStudentId(null);
         } catch (error) {
             console.error("Error updating student:", error);
         }
     };
+
+    const handleAddStudent = async () => {
+        if (!newStudentId || !newStudentName || !newStudentAge) return;
+
+        const newStudent = { id: newStudentId, name: newStudentName, age: newStudentAge };
+
+        try {
+
+            const tempStudent = { ...newStudent };
+            setStudents([...students, tempStudent]);
+
+            const response = await fetch("http://localhost:5000/api/adstudents", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(newStudent),
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add new student");
+            }
+
+            const addedStudent = await response.json();
+
+            setStudents((prevStudents) =>
+                prevStudents.map((student) =>
+                    student.id === tempStudent.id ? addedStudent : student
+                )
+            );
+
+            setNewStudentId("");
+            setNewStudentName("");
+            setNewStudentAge("");
+        } catch (error) {
+            console.error("Error adding new student:", error);
+
+            setStudents((prevStudents) =>
+                prevStudents.filter((student) => student.id !== newStudent.id)
+            );
+        }
+    };
+
+
 
     return (
         <div className="main1">
@@ -122,7 +170,7 @@ const WelcomePage = () => {
                             <tr key={student.id}>
                                 <td>{student.id}</td>
                                 <td>
-                                    {editingStudent && editingStudent.id === student.id ? (
+                                    {editingStudentId === student.id ? (
                                         <input
                                             type="text"
                                             value={newName}
@@ -133,7 +181,7 @@ const WelcomePage = () => {
                                     )}
                                 </td>
                                 <td>
-                                    {editingStudent && editingStudent.id === student.id ? (
+                                    {editingStudentId === student.id ? (
                                         <input
                                             type="number"
                                             value={newAge}
@@ -144,7 +192,7 @@ const WelcomePage = () => {
                                     )}
                                 </td>
                                 <td>
-                                    {editingStudent && editingStudent.id === student.id ? (
+                                    {editingStudentId === student.id ? (
                                         <>
                                             <button
                                                 onClick={handleSave}
@@ -159,7 +207,7 @@ const WelcomePage = () => {
                                                 Save
                                             </button>
                                             <button
-                                                onClick={() => setEditingStudent(null)}
+                                                onClick={() => setEditingStudentId(null)}
                                                 style={{
                                                     padding: "5px 10px",
                                                     backgroundColor: "red",
@@ -210,6 +258,43 @@ const WelcomePage = () => {
                     )}
                 </tbody>
             </table>
+
+            <h2>Add New Student</h2>
+            <div>
+                <input
+                    type="text"
+                    placeholder="ID"
+                    value={newStudentId}
+                    onChange={(e) => setNewStudentId(e.target.value)}
+                    style={{ marginRight: "10px" }}
+                />
+                <input
+                    type="text"
+                    placeholder="Name"
+                    value={newStudentName}
+                    onChange={(e) => setNewStudentName(e.target.value)}
+                    style={{ marginRight: "10px" }}
+                />
+                <input
+                    type="number"
+                    placeholder="Age"
+                    value={newStudentAge}
+                    onChange={(e) => setNewStudentAge(e.target.value)}
+                    style={{ marginRight: "10px" }}
+                />
+                <button
+                    onClick={handleAddStudent}
+                    style={{
+                        padding: "5px 10px",
+                        backgroundColor: "blue",
+                        color: "#fff",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                    }}
+                >
+                    Add Student
+                </button>
+            </div>
         </div>
     );
 };
