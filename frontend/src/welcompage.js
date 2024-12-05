@@ -8,12 +8,18 @@ const WelcomePage = () => {
 
     const [students, setStudents] = useState([]);
     const [editingStudentId, setEditingStudentId] = useState(null);
-    //const [newId, setNewId] = useState("");
     const [newName, setNewName] = useState("");
     const [newAge, setNewAge] = useState("");
+    const [newClass, setNewClass] = useState("");
+    const [newGender, setNewGender] = useState("");
     const [newStudentId, setNewStudentId] = useState("");
     const [newStudentName, setNewStudentName] = useState("");
     const [newStudentAge, setNewStudentAge] = useState("");
+    const [newStudentClass, setNewStudentClass] = useState("");
+    const [newStudentGender, setNewStudentGender] = useState("");
+
+    //const [sortNameAsc, setSortNameAsc] = useState(true);
+    const [sortAgeAsc, setSortAgeAsc] = useState(true);
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -54,6 +60,8 @@ const WelcomePage = () => {
         setEditingStudentId(student.id);
         setNewName(student.name);
         setNewAge(student.age);
+        setNewClass(student.class);
+        setNewGender(student.gender);
     };
 
     const handleSave = async () => {
@@ -63,6 +71,8 @@ const WelcomePage = () => {
             const updatedStudent = {
                 name: newName,
                 age: newAge,
+                class: newClass,
+                gender: newGender,
             };
             const response = await fetch(
                 `http://localhost:5000/api/ustudents/${editingStudentId}`,
@@ -89,8 +99,13 @@ const WelcomePage = () => {
     };
 
     const handleAddStudent = async () => {
-
-        const newStudent = { id: newStudentId, name: newStudentName, age: newStudentAge };
+        const newStudent = {
+            id: newStudentId,
+            name: newStudentName,
+            age: newStudentAge,
+            class: newStudentClass,
+            gender: newStudentGender,
+        };
 
         try {
             const response = await fetch("http://localhost:5000/api/adstudents", {
@@ -110,11 +125,23 @@ const WelcomePage = () => {
             setNewStudentId("");
             setNewStudentName("");
             setNewStudentAge("");
+            setNewStudentClass("");
+            setNewStudentGender("");
         } catch (error) {
             console.error("Error adding new student:", error);
         }
     };
 
+
+
+
+    const handleSortByAge = () => {
+        const sortedStudents = [...students].sort((a, b) => {
+            return sortAgeAsc ? a.age - b.age : b.age - a.age;
+        });
+        setStudents(sortedStudents);
+        setSortAgeAsc(!sortAgeAsc);
+    };
 
     return (
         <div className="main1">
@@ -138,13 +165,32 @@ const WelcomePage = () => {
             <h2>Student List</h2>
             <table
                 border="1"
-                style={{ width: "100%", textAlign: "left", height: "100%" }}
+                style={{
+                    width: "100%",
+                    height: "auto",
+                    margin: "0 auto",
+                    textAlign: "left",
+                    borderCollapse: "collapse",
+                    backgroundColor: "#f9f9f9",
+                    boxShadow: "0 2px 10px rgba(0, 0, 0, 0.1)",
+                    borderRadius: "8px",
+                    padding: "10px",
+
+
+                }}
             >
                 <thead>
-                    <tr>
+                    <tr style={{ width: "100%", textAlign: "left", height: "100%" }}>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Age</th>
+                        <th>name</th>
+                        <th>
+                            Age
+                            <button onClick={handleSortByAge} style={{ marginLeft: "10px", width: "80%", height: "5%" }}>
+                                {sortAgeAsc ? "Des" : "Asc"}
+                            </button>
+                        </th>
+                        <th>Class</th>
+                        <th>Gender</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -173,6 +219,28 @@ const WelcomePage = () => {
                                         />
                                     ) : (
                                         student.age
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            value={newClass}
+                                            onChange={(e) => setNewClass(e.target.value)}
+                                        />
+                                    ) : (
+                                        student.class
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            value={newGender}
+                                            onChange={(e) => setNewGender(e.target.value)}
+                                        />
+                                    ) : (
+                                        student.gender
                                     )}
                                 </td>
                                 <td>
@@ -209,10 +277,10 @@ const WelcomePage = () => {
                                                 onClick={() => handleEdit(student)}
                                                 style={{
                                                     padding: "5px 10px",
-                                                    backgroundColor: "green",
+                                                    backgroundColor: "yellowgreen",
                                                     borderRadius: "5px",
                                                     cursor: "pointer",
-                                                    marginRight: "8px",
+                                                    marginRight: "10px",
                                                 }}
                                             >
                                                 Edit
@@ -222,6 +290,7 @@ const WelcomePage = () => {
                                                 style={{
                                                     padding: "5px 10px",
                                                     backgroundColor: "red",
+                                                    color: "#fff",
                                                     borderRadius: "5px",
                                                     cursor: "pointer",
                                                 }}
@@ -235,42 +304,54 @@ const WelcomePage = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="4" style={{ textAlign: "center" }}>
-                                No students found.
-                            </td>
+                            <td colSpan="6">No students available</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            <h2>Add New Student</h2>
-            <div>
+            <h3>Add New Student</h3>
+            <div style={{ marginBottom: "20px" }}>
                 <input
                     type="text"
                     placeholder="ID"
                     value={newStudentId}
                     onChange={(e) => setNewStudentId(e.target.value)}
-                    style={{ marginRight: "10px" }}
+                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="text"
                     placeholder="Name"
                     value={newStudentName}
                     onChange={(e) => setNewStudentName(e.target.value)}
-                    style={{ marginRight: "10px" }}
+                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <input
                     type="number"
                     placeholder="Age"
                     value={newStudentAge}
                     onChange={(e) => setNewStudentAge(e.target.value)}
-                    style={{ marginRight: "10px" }}
+                    style={{ padding: "5px", margin: "5px" }}
+                />
+                <input
+                    type="text"
+                    placeholder="Class"
+                    value={newStudentClass}
+                    onChange={(e) => setNewStudentClass(e.target.value)}
+                    style={{ padding: "5px", margin: "5px" }}
+                />
+                <input
+                    type="text"
+                    placeholder="Gender"
+                    value={newStudentGender}
+                    onChange={(e) => setNewStudentGender(e.target.value)}
+                    style={{ padding: "5px", margin: "5px" }}
                 />
                 <button
                     onClick={handleAddStudent}
                     style={{
                         padding: "5px 10px",
-                        backgroundColor: "blue",
+                        backgroundColor: "#007bff",
                         color: "#fff",
                         borderRadius: "5px",
                         cursor: "pointer",
