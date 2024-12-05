@@ -90,7 +90,6 @@ const WelcomePage = () => {
 
     const handleAddStudent = async () => {
 
-
         const newStudent = { id: newStudentId, name: newStudentName, age: newStudentAge };
 
         try {
