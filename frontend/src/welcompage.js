@@ -18,7 +18,7 @@ const WelcomePage = () => {
     const [newStudentClass, setNewStudentClass] = useState("");
     const [newStudentGender, setNewStudentGender] = useState("");
 
-    //const [sortNameAsc, setSortNameAsc] = useState(true);
+    const [sortNameAsc, setSortNameAsc] = useState(true);
     const [sortAgeAsc, setSortAgeAsc] = useState(true);
 
     useEffect(() => {
@@ -131,6 +131,15 @@ const WelcomePage = () => {
             console.error("Error adding new student:", error);
         }
     };
+    const handleSortByName = () => {
+        const sortedStudents = [...students].sort((a, b) => {
+            return sortNameAsc
+                ? a.name.localeCompare(b.name)
+                : b.name.localeCompare(a.name);
+        });
+        setStudents(sortedStudents);
+        setSortNameAsc(!sortNameAsc);
+    };
 
 
 
@@ -182,7 +191,12 @@ const WelcomePage = () => {
                 <thead>
                     <tr style={{ width: "100%", textAlign: "left", height: "100%" }}>
                         <th>ID</th>
-                        <th>name</th>
+                        <th>
+                            Name
+                            <button onClick={handleSortByName} style={{ marginLeft: "10px", width: "80%", height: "5%" }}>
+                                {sortNameAsc ? "Des" : "Asc"}
+                            </button>
+                        </th>
                         <th>
                             Age
                             <button onClick={handleSortByAge} style={{ marginLeft: "10px", width: "80%", height: "5%" }}>
