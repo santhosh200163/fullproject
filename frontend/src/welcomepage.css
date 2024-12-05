@@ -1,10 +1,8 @@
-/* Container Styles */
 .welcome-container {
     padding: 20px;
     font-family: Arial, sans-serif;
 }
 
-/* Back Button */
 .back-button {
     padding: 10px 20px;
     margin: 20px 0;
@@ -15,7 +13,6 @@
     cursor: pointer;
 }
 
-/* Table Styles */
 .student-table {
     width: 100%;
     border-collapse: collapse;
@@ -37,7 +34,6 @@
     color: white;
 }
 
-/* Button Styles */
 .edit-button,
 .delete-button,
 .add-button,
