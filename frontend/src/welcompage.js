@@ -10,16 +10,19 @@ const WelcomePage = () => {
     const [students, setStudents] = useState([]);
     const [editingStudentId, setEditingStudentId] = useState(null);
     const [editForm, setEditForm] = useState({
+        id: "",
         name: "",
         age: "",
         class: "",
         gender: "",
     });
     const [addForm, setAddForm] = useState({
+        id: "",
         name: "",
         age: "",
         class: "",
         gender: "",
+
     });
 
     useEffect(() => {
@@ -109,7 +112,7 @@ const WelcomePage = () => {
     const handleAdd = async () => {
         try {
             const newStudent = { ...addForm };
-            const response = await fetch("http://localhost:5000/api/addstudent", {
+            const response = await fetch("http://localhost:5000/api/adstudents", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -124,6 +127,7 @@ const WelcomePage = () => {
             const addedStudent = await response.json();
             setStudents((prevStudents) => [...prevStudents, addedStudent]);
             setAddForm({
+                id: "",
                 name: "",
                 age: "",
                 class: "",
@@ -265,6 +269,13 @@ const WelcomePage = () => {
 
             <h2>Add New Student</h2>
             <div className="add-form">
+                <input
+                    type="number"
+                    name="id"
+                    placeholder="id"
+                    value={addForm.id}
+                    onChange={handleAddInputChange}
+                />
                 <input
                     type="text"
                     name="name"
