@@ -22,8 +22,8 @@ const WelcomePage = () => {
         age: "",
         class: "",
         gender: "",
-
     });
+    const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
     useEffect(() => {
         const fetchStudents = async () => {
@@ -152,6 +152,33 @@ const WelcomePage = () => {
         }
     };
 
+    const sortStudents = (key) => {
+        let direction = "asc";
+        if (sortConfig.key === key && sortConfig.direction === "asc") {
+            direction = "desc";
+        }
+
+        const sortedData = [...students].sort((a, b) => {
+            if (a[key] < b[key]) {
+                return direction === "asc" ? -1 : 1;
+            }
+            if (a[key] > b[key]) {
+                return direction === "asc" ? 1 : -1;
+            }
+            return 0;
+        });
+
+        setStudents(sortedData);
+        setSortConfig({ key, direction });
+    };
+
+    const getSortButtonLabel = (key) => {
+        if (sortConfig.key === key) {
+            return sortConfig.direction === "asc" ? "Desc" : "Asc";
+        }
+        return "Asc";
+    };
+
     return (
         <div className="welcome-container">
             <h1>Welcome, {username}!</h1>
@@ -164,10 +191,20 @@ const WelcomePage = () => {
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Name</th>
-                        <th>Age</th>
+                        <th>
+                            Name
+                            <button onClick={() => sortStudents("name")}>
+                                {getSortButtonLabel("name")}
+                            </button>
+                        </th>
+                        <th>
+                            Age
+                            <button onClick={() => sortStudents("age")}>
+                                {getSortButtonLabel("age")}
+                            </button>
+                        </th>
                         <th>Class</th>
-                        <th>Gender</th>
+                        <th>Gender </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -272,7 +309,7 @@ const WelcomePage = () => {
                 <input
                     type="number"
                     name="id"
-                    placeholder="id"
+                    placeholder="ID"
                     value={addForm.id}
                     onChange={handleAddInputChange}
                 />
