@@ -1,89 +1,196 @@
-.welcome-container {
-    padding: 20px;
+/* General styling */
+body {
     font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
 }
 
+/* Container for the page */
+.welcome-container {
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Header styles */
+h1 {
+    color: #4CAF50;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+/* Back button styling */
 .back-button {
-    padding: 10px 20px;
-    margin: 20px 0;
-    background-color: #007bff;
+    display: inline-block;
+    background-color: #4CAF50;
     color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    float: right;
+
+    margin-bottom: 20px;
+}
+
+.back-button:hover {
+    background-color: #45a049;
+}
+
+/* Table styling */
+.student-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.student-table th,
+.student-table td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.student-table th {
+    background-color: #f2f2f2;
+}
+
+.student-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.student-table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.sortable-header button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 5px;
+    color: #2196F3;
+}
+
+.sortable-header button:hover {
+    color: #1e88e5;
+}
+
+/* Edit and Add student form styles */
+.add-student-form input,
+.add-student-form button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+.add-student-form button {
+    background-color: #4CAF50;
+    color: white;
+    cursor: pointer;
+}
+
+.add-student-form button:hover {
+    background-color: #45a049;
+}
+
+/* Button styling for Save and Cancel */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+button:active {
+    background-color: #388e3c;
+}
+
+/* Input field focus */
+input:focus {
+    outline: none;
+    border-color: #4CAF50;
+}
+
+input::placeholder {
+    color: #aaa;
+}
+
+input[type="text"],
+input[type="number"] {
+    width: 100%;
+}
+
+/* Table actions (edit and delete buttons) */
+.student-table td button {
+    background-color: #2196F3;
+    color: white;
+    padding: 6px 12px;
+    margin: 0 5px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
-.student-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: white;
-    border-radius: 8px;
-    overflow: hidden;
+.student-table td button:hover {
+    background-color: #1976d2;
 }
 
-.student-table th,
-.student-table td {
-    padding: 12px 15px;
-    text-align: left;
-    border-bottom: 1px solid lightgray;
+.student-table td button:active {
+    background-color: #1565c0;
 }
 
-.student-table th {
-    background-color: blue;
-    color: white;
+.student-table td button.delete {
+    background-color: #f44336;
 }
 
-.edit-button,
-.delete-button,
-.add-button,
-.sort-button {
-    padding: 8px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.student-table td button.delete:hover {
+    background-color: #e53935;
 }
 
-.edit-button {
-    background-color: #28a745;
-    color: white;
-}
-
-.delete-button {
-    background-color: red;
-    color: white;
-}
-
-.add-button {
-    background-color: blue;
-}
-
-.sort-button {
-    background-color: gray;
-    color: white;
-    margin-left: 5px;
-}
-
+/* Add student form container styling */
 .add-student-form {
     margin-top: 20px;
-    display: flex;
-    gap: 10px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .add-student-form input {
-    padding: 7px;
-    width: 100px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-
+    margin-bottom: 10px;
 }
 
-.add-student-form input[type="text"],
-.add-student-form input[type="number"] {
-    width: 150px;
+/* Messages and error handling */
+.error-message {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 10px;
 }
 
-.add-student-form input::placeholder {
-    color: #bbb;
+.success-message {
+    color: #4CAF50;
+    font-size: 14px;
+    margin-top: 10px;
 }

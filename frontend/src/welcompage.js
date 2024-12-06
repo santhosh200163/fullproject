@@ -10,21 +10,26 @@ const WelcomePage = () => {
     const [students, setStudents] = useState([]);
     const [editingStudentId, setEditingStudentId] = useState(null);
     const [editForm, setEditForm] = useState({
-        id: "",
+        id: "",  // Added for edit form
         name: "",
         age: "",
         class: "",
         gender: "",
+        native: "",
+        teacherName: "",
     });
     const [addForm, setAddForm] = useState({
-        id: "",
+        id: "",  // Added for add form if you want it displayed
         name: "",
         age: "",
         class: "",
         gender: "",
+        native: "",
+        teacherName: "",
     });
     const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
+    // Fetch students once when component mounts
     useEffect(() => {
         const fetchStudents = async () => {
             try {
@@ -48,12 +53,7 @@ const WelcomePage = () => {
 
     const handleEdit = (student) => {
         setEditingStudentId(student.id);
-        setEditForm({
-            name: student.name,
-            age: student.age,
-            class: student.class,
-            gender: student.gender,
-        });
+        setEditForm({ ...student });
     };
 
     const handleSave = async () => {
@@ -76,14 +76,24 @@ const WelcomePage = () => {
                 throw new Error("Failed to update student");
             }
 
+            const updatedStudentData = await response.json();
             setStudents((prevStudents) =>
                 prevStudents.map((student) =>
                     student.id === editingStudentId
-                        ? { ...student, ...updatedStudent }
+                        ? { ...student, ...updatedStudentData }
                         : student
                 )
             );
             setEditingStudentId(null);
+            setEditForm({
+                id: "",
+                name: "",
+                age: "",
+                class: "",
+                gender: "",
+                native: "",
+                teacherName: "",
+            });
         } catch (error) {
             console.error("Error updating student:", error);
         }
@@ -127,11 +137,13 @@ const WelcomePage = () => {
             const addedStudent = await response.json();
             setStudents((prevStudents) => [...prevStudents, addedStudent]);
             setAddForm({
-                id: "",
+                id: "",  // Reset the id field for the next student
                 name: "",
                 age: "",
                 class: "",
                 gender: "",
+                native: "",
+                teacherName: "",
             });
         } catch (error) {
             console.error("Error adding student:", error);
@@ -192,19 +204,25 @@ const WelcomePage = () => {
                     <tr>
                         <th>ID</th>
                         <th>
-                            Name
-                            <button onClick={() => sortStudents("name")}>
-                                {getSortButtonLabel("name")}
-                            </button>
+                            <div className="sortable-header">
+                                Name
+                                <button onClick={() => sortStudents("name")}>
+                                    {getSortButtonLabel("name")}
+                                </button>
+                            </div>
                         </th>
                         <th>
-                            Age
-                            <button onClick={() => sortStudents("age")}>
-                                {getSortButtonLabel("age")}
-                            </button>
+                            <div className="sortable-header">
+                                Age
+                                <button onClick={() => sortStudents("age")}>
+                                    {getSortButtonLabel("age")}
+                                </button>
+                            </div>
                         </th>
                         <th>Class</th>
-                        <th>Gender </th>
+                        <th>Gender</th>
+                        <th>Native</th>
+                        <th>Teacher Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -263,32 +281,38 @@ const WelcomePage = () => {
                                 </td>
                                 <td>
                                     {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            name="native"
+                                            value={editForm.native}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.native
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
+                                        <input
+                                            type="text"
+                                            name="teacherName"
+                                            value={editForm.teacherName}
+                                            onChange={handleInputChange}
+                                        />
+                                    ) : (
+                                        student.teacherName
+                                    )}
+                                </td>
+                                <td>
+                                    {editingStudentId === student.id ? (
                                         <>
-                                            <button
-                                                className="save-button"
-                                                onClick={handleSave}
-                                            >
-                                                Save
-                                            </button>
-                                            <button
-                                                className="cancel-button"
-                                                onClick={handleCancelEdit}
-                                            >
-                                                Cancel
-                                            </button>
+                                            <button onClick={handleSave}>Save</button>
+                                            <button onClick={handleCancelEdit}>Cancel</button>
                                         </>
                                     ) : (
                                         <>
-                                            <button
-                                                className="edit-button"
-                                                onClick={() => handleEdit(student)}
-                                            >
-                                                Edit
-                                            </button>
-                                            <button
-                                                className="delete-button"
-                                                onClick={() => handleDelete(student.id)}
-                                            >
+                                            <button onClick={() => handleEdit(student)}>Edit</button>
+                                            <button onClick={() => handleDelete(student.id)}>
                                                 Delete
                                             </button>
                                         </>
@@ -298,52 +322,64 @@ const WelcomePage = () => {
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="6">No students available</td>
+                            <td colSpan="8">No students found</td>
                         </tr>
                     )}
                 </tbody>
             </table>
 
-            <h2>Add New Student</h2>
-            <div className="add-form">
+            <h2>Add Student</h2>
+            <div className="add-student-form">
                 <input
-                    type="number"
+                    type="text"
                     name="id"
-                    placeholder="ID"
                     value={addForm.id}
                     onChange={handleAddInputChange}
+                    placeholder="Student ID"
                 />
                 <input
                     type="text"
                     name="name"
-                    placeholder="Name"
                     value={addForm.name}
                     onChange={handleAddInputChange}
+                    placeholder="Name"
                 />
                 <input
                     type="number"
                     name="age"
-                    placeholder="Age"
                     value={addForm.age}
                     onChange={handleAddInputChange}
+                    placeholder="Age"
                 />
                 <input
                     type="text"
                     name="class"
-                    placeholder="Class"
                     value={addForm.class}
                     onChange={handleAddInputChange}
+                    placeholder="Class"
                 />
                 <input
                     type="text"
                     name="gender"
-                    placeholder="Gender"
                     value={addForm.gender}
                     onChange={handleAddInputChange}
+                    placeholder="Gender"
                 />
-                <button className="add-button" onClick={handleAdd}>
-                    Add Student
-                </button>
+                <input
+                    type="text"
+                    name="native"
+                    value={addForm.native}
+                    onChange={handleAddInputChange}
+                    placeholder="Native"
+                />
+                <input
+                    type="text"
+                    name="teacherName"
+                    value={addForm.teacherName}
+                    onChange={handleAddInputChange}
+                    placeholder="Teacher Name"
+                />
+                <button onClick={handleAdd}>Add Student</button>
             </div>
         </div>
     );
