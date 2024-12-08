@@ -10,7 +10,7 @@ const WelcomePage = () => {
     const [students, setStudents] = useState([]);
     const [editingStudentId, setEditingStudentId] = useState(null);
     const [editForm, setEditForm] = useState({
-        id: "",  // Added for edit form
+        id: "",
         name: "",
         age: "",
         class: "",
@@ -19,7 +19,7 @@ const WelcomePage = () => {
         teacherName: "",
     });
     const [addForm, setAddForm] = useState({
-        id: "",  // Added for add form if you want it displayed
+        id: "",
         name: "",
         age: "",
         class: "",
@@ -29,7 +29,6 @@ const WelcomePage = () => {
     });
     const [sortConfig, setSortConfig] = useState({ key: null, direction: null });
 
-    // Fetch students once when component mounts
     useEffect(() => {
         const fetchStudents = async () => {
             try {
@@ -38,6 +37,8 @@ const WelcomePage = () => {
                     throw new Error("Failed to fetch students");
                 }
                 const data = await response.json();
+                console.log(data);
+
                 setStudents(data);
             } catch (error) {
                 console.error("Error fetching students:", error);
@@ -52,6 +53,8 @@ const WelcomePage = () => {
     };
 
     const handleEdit = (student) => {
+        console.log("Editing Student ID:", student.id);
+
         setEditingStudentId(student.id);
         setEditForm({ ...student });
     };
@@ -61,6 +64,7 @@ const WelcomePage = () => {
 
         try {
             const updatedStudent = { ...editForm };
+
             const response = await fetch(
                 `http://localhost:5000/api/ustudents/${editingStudentId}`,
                 {
@@ -77,13 +81,15 @@ const WelcomePage = () => {
             }
 
             const updatedStudentData = await response.json();
+            console.log("Updated Student Data:", updatedStudentData); // Debug
+
+
             setStudents((prevStudents) =>
                 prevStudents.map((student) =>
-                    student.id === editingStudentId
-                        ? { ...student, ...updatedStudentData }
-                        : student
+                    student.id === editingStudentId ? updatedStudentData : student
                 )
             );
+
             setEditingStudentId(null);
             setEditForm({
                 id: "",
@@ -98,6 +104,7 @@ const WelcomePage = () => {
             console.error("Error updating student:", error);
         }
     };
+
 
     const handleCancelEdit = () => {
         setEditingStudentId(null);
@@ -137,7 +144,7 @@ const WelcomePage = () => {
             const addedStudent = await response.json();
             setStudents((prevStudents) => [...prevStudents, addedStudent]);
             setAddForm({
-                id: "",  // Reset the id field for the next student
+                id: "",
                 name: "",
                 age: "",
                 class: "",
@@ -351,20 +358,35 @@ const WelcomePage = () => {
                     onChange={handleAddInputChange}
                     placeholder="Age"
                 />
-                <input
-                    type="text"
+                <select
                     name="class"
                     value={addForm.class}
                     onChange={handleAddInputChange}
-                    placeholder="Class"
-                />
-                <input
-                    type="text"
+                >
+                    <option value="">Select Class</option>
+                    <option value="1">Class 1</option>
+                    <option value="2">Class 2</option>
+                    <option value="3">Class 3</option>
+                    <option value="4">Class 4</option>
+                    <option value="5">Class 5</option>
+                    <option value="6">Class 6</option>
+                    <option value="7">Class 7</option>
+                    <option value="8">Class 8</option>
+                    <option value="9">Class 9</option>
+                    <option value="10">Class 10</option>
+                    <option value="11">Class 11</option>
+                    <option value="12">Class 12</option>
+                </select>
+                <select
                     name="gender"
                     value={addForm.gender}
                     onChange={handleAddInputChange}
-                    placeholder="Gender"
-                />
+                >
+                    <option value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                </select>
                 <input
                     type="text"
                     name="native"

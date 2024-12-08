@@ -16,9 +16,10 @@ collection = db["first"]
 def get_students():
     students_list = []
     for student in collection.find({}):
-        student.pop("_id", None)  
-        students_list.append(student)
+        student["_id"] = str(student["_id"])  
+        students_list.append(student)        
     return jsonify(students_list)
+
 
 # Add a new student
 @app.route('/api/adstudents', methods=["POST"])
